@@ -135,6 +135,7 @@ public class livefragment extends Fragment {
         videoView = (GLSurfaceView) v.findViewById(R.id.glview_call);
         imageView=(ImageView) v.findViewById(R.id.imageView);
        button=(Button) v.findViewById(R.id.hello);
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -142,7 +143,7 @@ public class livefragment extends Fragment {
                 JSONObject obj = new JSONObject();
                 try {
                     obj.put("email","shoaib@yahoo.com");
-
+                    obj.put("loginemail",loginemail);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -170,9 +171,9 @@ public class livefragment extends Fragment {
 
 
 
+        startPeerConnection();
 
 
-                startPeerConnection();
 
 
         final Handler handler = new Handler();
@@ -376,78 +377,78 @@ public class livefragment extends Fragment {
 
 
         peerConnection.addStream(localMediaStream);
-
-
-
         try {
             socket = IO.socket(SIGNALING_URI);
-            JSONObject obj = new JSONObject();
-            try {
-                obj.put("email",loginemail);
 
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            socket.emit(Camera,obj);
-            socket.on(CREATEOFFER, new Emitter.Listener() {
-
-                @Override
-                public void call(Object... args) {
-
-                    createOffer = true;
-                    peerConnection.createOffer(sdpObserver, new MediaConstraints());
-
-                }
-
-            }).on(OFFER, new Emitter.Listener() {
-
-                @Override
-                public void call(Object... args) {
-                    try {
-                        JSONObject obj = (JSONObject) args[0];
-                        SessionDescription sdp = new SessionDescription(SessionDescription.Type.OFFER,
-                                obj.getString(SDP));
-                        peerConnection.setRemoteDescription(sdpObserver, sdp);
-                        peerConnection.createAnswer(sdpObserver, new MediaConstraints());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-            }).on(ANSWER, new Emitter.Listener() {
-
-                @Override
-                public void call(Object... args) {
-                    try {
-                        JSONObject obj = (JSONObject) args[0];
-                        SessionDescription sdp = new SessionDescription(SessionDescription.Type.ANSWER,
-                                obj.getString(SDP));
-                        peerConnection.setRemoteDescription(sdpObserver, sdp);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-            }).on(CANDIDATE, new Emitter.Listener() {
-
-                @Override
-                public void call(Object... args) {
-                    try {
-                        JSONObject obj = (JSONObject) args[0];
-                        peerConnection.addIceCandidate(new IceCandidate(obj.getString(SDP_MID),
-                                obj.getInt(SDP_M_LINE_INDEX),
-                                obj.getString(SDP)));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-            });
-
-            socket.connect();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("email",loginemail);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        socket.emit(Camera,obj);
+
+        socket.on(CREATEOFFER, new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+
+                createOffer = true;
+                peerConnection.createOffer(sdpObserver, new MediaConstraints());
+
+            }
+
+        }).on(OFFER, new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+                try {
+                    JSONObject obj = (JSONObject) args[0];
+                    SessionDescription sdp = new SessionDescription(SessionDescription.Type.OFFER,
+                            obj.getString(SDP));
+                    peerConnection.setRemoteDescription(sdpObserver, sdp);
+                    peerConnection.createAnswer(sdpObserver, new MediaConstraints());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }).on(ANSWER, new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+                try {
+                    JSONObject obj = (JSONObject) args[0];
+                    SessionDescription sdp = new SessionDescription(SessionDescription.Type.ANSWER,
+                            obj.getString(SDP));
+                    peerConnection.setRemoteDescription(sdpObserver, sdp);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }).on(CANDIDATE, new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+                try {
+                    JSONObject obj = (JSONObject) args[0];
+                    peerConnection.addIceCandidate(new IceCandidate(obj.getString(SDP_MID),
+                            obj.getInt(SDP_M_LINE_INDEX),
+                            obj.getString(SDP)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        });
+        socket.connect();
+
+
 
     }
 
