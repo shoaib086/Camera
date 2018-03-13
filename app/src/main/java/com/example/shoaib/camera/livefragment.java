@@ -55,6 +55,8 @@ import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
 
 import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import io.socket.client.IO;
@@ -67,6 +69,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.BIND_AUTO_CREATE;
 import static android.content.Context.MEDIA_PROJECTION_SERVICE;
+import static com.example.shoaib.camera.utils.AppConstants.cameraemail;
 import static com.example.shoaib.camera.utils.AppConstants.connectemail;
 import static com.example.shoaib.camera.utils.AppConstants.ip_address;
 import static com.example.shoaib.camera.utils.AppConstants.loginemail;
@@ -77,6 +80,8 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -125,6 +130,7 @@ public class livefragment extends Fragment {
     Button button;
     private GLSurfaceView videoView;
     private Bitmap snapshotBitmap;
+    private int number=0;
 
 
     @Override
@@ -139,11 +145,18 @@ public class livefragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+               // String datetime = df.getDateTimeInstance().format(new Date());
+                String datetime = df.format(Calendar.getInstance().getTime());
+                Log.d("date",datetime);
                 JSONObject obj = new JSONObject();
                 try {
-                    obj.put("email","shoaib@yahoo.com");
+                    obj.put("email",cameraemail);
                     obj.put("loginemail",loginemail);
+                    obj.put("faceno",number);
+                    obj.put("datetime",datetime);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -229,7 +242,10 @@ public class livefragment extends Fragment {
                         float y2 = y1 + thisFace.getHeight();
                         tempCanvas.drawRoundRect(new RectF(x1, y1, x2, y2), 2, 2, myRectPaint);
 
-
+                        if(number<faces.size())
+                        {
+                            number=faces.size();
+                        }
                     }
                     imageView.setImageDrawable(new BitmapDrawable(getResources(), tempBitmap));
                 }

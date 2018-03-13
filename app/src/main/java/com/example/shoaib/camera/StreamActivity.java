@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,12 +16,25 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.example.shoaib.camera.listeners.ServiceCallBack;
+import com.example.shoaib.camera.utils.AppConstants;
+import com.example.shoaib.camera.utils.VolleyRequestHandler;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+
+import static com.example.shoaib.camera.utils.AppConstants.cameraemail;
 import static com.example.shoaib.camera.utils.AppConstants.loginemail;
 
 public class StreamActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
-
+        implements NavigationView.OnNavigationItemSelectedListener , View.OnClickListener, ServiceCallBack {
+    TextView navEmail;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +50,16 @@ public class StreamActivity extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });*/
+try{
+        JSONObject requestObject = new JSONObject();
+        requestObject.put("name", loginemail);
 
+        VolleyRequestHandler postRequestHandler = new VolleyRequestHandler();
+        postRequestHandler.makeJsonRequest(this, Request.Method.POST, AppConstants.emailcamera_URL, AppConstants.POST_TAG,this, requestObject);
+
+    } catch (JSONException e) {
+        e.printStackTrace();
+    }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -46,7 +69,9 @@ public class StreamActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
        TextView navUsername = (TextView) headerView.findViewById(R.id.textView);
+        navEmail = (TextView) headerView.findViewById(R.id.textView2);
         navUsername.setText(loginemail);
+
 
         navigationView.setNavigationItemSelectedListener(this);
         FragmentTransaction fragmentTransaction =getSupportFragmentManager().beginTransaction();
@@ -105,5 +130,49 @@ public class StreamActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onClick(View view) {
+
+    }
+
+    @Override
+    public void onSuccess(String requestTag, Object data) throws UnsupportedEncodingException {
+        Toast.makeText(this, requestTag + ">>>" + data, Toast.LENGTH_LONG).show();
+        Log.d("done",data.toString());
+        try {
+            JSONObject jsonObject = new JSONObject(data.toString());
+            String message = jsonObject.getString("Message");
+            JSONArray Users = jsonObject.getJSONArray("Users");
+            JSONObject obj2= Users.getJSONObject(0);
+            String email = obj2.getString("email");
+
+
+            //JSONArray obj=Users.getJSONArray(1);
+
+            Log.d("shoaib", message);
+
+
+                navEmail.setText(email);
+                cameraemail=email;
+                Log.d("done",Users.toString());
+                Log.d("done",obj2.toString());
+           // Log.d("done",obj.toString());
+            //Log.d("done",email);
+
+
+
+              //  Toast.makeText(this, "Please enter correct email and password", Toast.LENGTH_LONG).show();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onFailure(String requestTag, String message) {
+
+        Toast.makeText(this, requestTag + ">>>" + message, Toast.LENGTH_LONG).show();
     }
 }
