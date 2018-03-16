@@ -76,7 +76,7 @@ try{
         navigationView.setNavigationItemSelectedListener(this);
         FragmentTransaction fragmentTransaction =getSupportFragmentManager().beginTransaction();
         livefragment fragment = new livefragment();
-        fragmentTransaction.add(R.id.content_frame, fragment);
+        fragmentTransaction.replace(R.id.content_frame, fragment);
 
         fragmentTransaction.commit();
     }

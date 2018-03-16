@@ -156,6 +156,10 @@ public class livefragment extends Fragment {
                     obj.put("loginemail",loginemail);
                     obj.put("faceno",number);
                     obj.put("datetime",datetime);
+                    long videoid=System.currentTimeMillis();
+                    obj.put("videoid",videoid);
+                    Log.d("done", String.valueOf(videoid));
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -185,13 +189,44 @@ public class livefragment extends Fragment {
 
 
         startPeerConnection();
+        final Handler handler2 = new Handler();
+        Runnable r = new Runnable() {
+            public void run() {
+                if(number>0) {
+                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+                    // String datetime = df.getDateTimeInstance().format(new Date());
+                    String datetime = df.format(Calendar.getInstance().getTime());
+                    Log.d("date", datetime);
+                    JSONObject obj = new JSONObject();
+                    try {
+                        obj.put("email", cameraemail);
+                        obj.put("loginemail", loginemail);
+                        obj.put("faceno", number);
+                        obj.put("datetime", datetime);
+                        long videoid=System.currentTimeMillis();
+                        obj.put("videoid",videoid);
+                        Log.d("done", String.valueOf(videoid));
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    socket.emit("notification", obj);
+                    Log.d("hello", "Done");
+                    number=0;
+                }
+                handler2.postDelayed(this, 15000);
+            }
+        };
+
+        handler2.postDelayed(r, 10000);
 
 
 
 
         final Handler handler = new Handler();
 
-        Runnable r = new Runnable() {
+        Runnable r2 = new Runnable() {
             public void run() {
                 new LongOperation().execute();
 //                new LongOperation(getActivity(),).execute();
@@ -199,7 +234,7 @@ public class livefragment extends Fragment {
             }
         };
 
-        handler.postDelayed(r, 5000);
+        handler.postDelayed(r2, 5000);
 
         return v;
     }
@@ -246,6 +281,7 @@ public class livefragment extends Fragment {
                         {
                             number=faces.size();
                         }
+
                     }
                     imageView.setImageDrawable(new BitmapDrawable(getResources(), tempBitmap));
                 }
@@ -604,6 +640,7 @@ public class livefragment extends Fragment {
         @Override
         public void onIceCandidate(IceCandidate iceCandidate) {
             try {
+
                 JSONObject obj = new JSONObject();
                 obj.put(SDP_MID, iceCandidate.sdpMid);
                 obj.put(SDP_M_LINE_INDEX, iceCandidate.sdpMLineIndex);
