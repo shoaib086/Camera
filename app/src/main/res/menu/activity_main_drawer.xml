@@ -4,6 +4,15 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_activity"
+            android:icon="@drawable/activity"
+            android:title="Activity Detection" />
+        <item
+            android:id="@+id/nav_face"
+            android:icon="@drawable/face2"
+            android:title="Face Detection" />
         <item
             android:id="@+id/nav_camera"
             android:icon="@drawable/logout"

@@ -8,7 +8,7 @@ public class AppConstants {
 
     //Urls
    // public static final String BASE_URL = "http://reqres.in/api/";
-    public static final String ip_address="http://192.168.10.18:3000";
+    public static final String ip_address="http://192.168.10.8:3000";
     public static final String signin_URL = ip_address+"/logincamera";
     public static final String sendmail_URL = ip_address+"/sendmail";
     public static final String addcameras_URL = ip_address+"/addcameras";

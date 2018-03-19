@@ -66,24 +66,16 @@ import io.socket.emitter.Emitter;
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static android.app.Activity.RESULT_OK;
-import static android.content.Context.BIND_AUTO_CREATE;
-import static android.content.Context.MEDIA_PROJECTION_SERVICE;
+
 import static com.example.shoaib.camera.utils.AppConstants.cameraemail;
 import static com.example.shoaib.camera.utils.AppConstants.connectemail;
 import static com.example.shoaib.camera.utils.AppConstants.ip_address;
 import static com.example.shoaib.camera.utils.AppConstants.loginemail;
-import static com.google.android.gms.internal.zzir.runOnUiThread;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
+
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
+
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLContext;
@@ -131,6 +123,7 @@ public class livefragment extends Fragment {
     private GLSurfaceView videoView;
     private Bitmap snapshotBitmap;
     private int number=0;
+
 
 
     @Override
@@ -189,37 +182,7 @@ public class livefragment extends Fragment {
 
 
         startPeerConnection();
-        final Handler handler2 = new Handler();
-        Runnable r = new Runnable() {
-            public void run() {
-                if(number>0) {
-                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-                    // String datetime = df.getDateTimeInstance().format(new Date());
-                    String datetime = df.format(Calendar.getInstance().getTime());
-                    Log.d("date", datetime);
-                    JSONObject obj = new JSONObject();
-                    try {
-                        obj.put("email", cameraemail);
-                        obj.put("loginemail", loginemail);
-                        obj.put("faceno", number);
-                        obj.put("datetime", datetime);
-                        long videoid=System.currentTimeMillis();
-                        obj.put("videoid",videoid);
-                        Log.d("done", String.valueOf(videoid));
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    socket.emit("notification", obj);
-                    Log.d("hello", "Done");
-                    number=0;
-                }
-                handler2.postDelayed(this, 15000);
-            }
-        };
-
-        handler2.postDelayed(r, 10000);
 
 
 
@@ -228,13 +191,16 @@ public class livefragment extends Fragment {
 
         Runnable r2 = new Runnable() {
             public void run() {
+
                 new LongOperation().execute();
+
 //                new LongOperation(getActivity(),).execute();
-                handler.postDelayed(this, 20);
+                handler.postDelayed(this, 15);
             }
         };
 
-        handler.postDelayed(r2, 5000);
+        handler.postDelayed(r2, 2000);
+
 
         return v;
     }
@@ -277,9 +243,28 @@ public class livefragment extends Fragment {
                         float y2 = y1 + thisFace.getHeight();
                         tempCanvas.drawRoundRect(new RectF(x1, y1, x2, y2), 2, 2, myRectPaint);
 
-                        if(number<faces.size())
+                        if(faces.size()>0)
                         {
-                            number=faces.size();
+                            DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+                            // String datetime = df.getDateTimeInstance().format(new Date());
+                            String datetime = df.format(Calendar.getInstance().getTime());
+                            Log.d("date", datetime);
+                            JSONObject obj = new JSONObject();
+                            try {
+                                obj.put("email", cameraemail);
+                                obj.put("loginemail", loginemail);
+                                obj.put("faceno", faces.size());
+                                obj.put("datetime", datetime);
+                                long videoid=System.currentTimeMillis();
+                                obj.put("videoid",videoid);
+                                Log.d("done", String.valueOf(videoid));
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            socket.emit("notification", obj);
+                            Log.d("hello", "Done");
                         }
 
                     }
@@ -414,6 +399,22 @@ public class livefragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    @Override
+    public void onPause() {
+
+        super.onPause();
+
+
+
+    }
+    @Override
+    public void onResume() {
+
+        super.onResume();
+
+
+
     }
 
 

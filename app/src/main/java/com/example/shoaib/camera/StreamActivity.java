@@ -74,11 +74,13 @@ try{
 
 
         navigationView.setNavigationItemSelectedListener(this);
+
         FragmentTransaction fragmentTransaction =getSupportFragmentManager().beginTransaction();
         livefragment fragment = new livefragment();
         fragmentTransaction.replace(R.id.content_frame, fragment);
 
         fragmentTransaction.commit();
+
     }
 
     @Override
@@ -125,6 +127,22 @@ try{
 
             startActivity(intent);
             finish();
+        }
+        if (id == R.id.nav_activity) {
+
+            FragmentTransaction fragmentTransaction =getSupportFragmentManager().beginTransaction();
+            ActivityFragment fragment = new ActivityFragment();
+            fragmentTransaction.replace(R.id.content_frame, fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
+        if (id == R.id.nav_face) {
+
+            FragmentTransaction fragmentTransaction =getSupportFragmentManager().beginTransaction();
+            livefragment fragment = new livefragment();
+            fragmentTransaction.replace(R.id.content_frame, fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
